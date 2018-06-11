@@ -3,12 +3,15 @@ import java.util.Scanner;
 
 public class KNNAnalytics {
 	private LinkedList<Cluster> clusterList;
+	private Classifier stateClassifier;
 
 	public KNNAnalytics() {
 		clusterList = new LinkedList<>();
+		stateClassifier = new Classifier();
 		this.createCluster();
 		this.addStateToCluster();
 		this.printClusters();
+		this.classierSetup();
 	}
 
 	private void createCluster() {
@@ -62,7 +65,14 @@ public class KNNAnalytics {
 		}
 	}
 
-	private void classifier() {
-			
+	private void classierSetup() {
+		stateClassifier = new Classifier();
+		for(Cluster c: clusterList){
+			LinkedList<SubStateList> tempList = c.getSubStateLists();
+			stateClassifier.addSubStateList(tempList);
+			/*for(SubStateList sS:tempList){
+				stateClassifier.addSubStateList(sS);
+			}*/
+		}
 	}
 }

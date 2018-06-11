@@ -2,8 +2,19 @@ import java.util.Comparator;
 import java.util.PriorityQueue;
 
 public class SubStateList {
-	private String subStateTypeName;
-	private PriorityQueue<State> subStatesList;
+	private String subStateTypeName;/*
+									 * the name of the subState so i know what
+									 * the state is being ranked by in the
+									 * priority queue
+									 */
+	private PriorityQueue<State> subStatesList;/*
+												 * The state is ranked instead
+												 * of the actual subState so the
+												 * above objects in the
+												 * hierarchy can identify the
+												 * state the subState belongs
+												 * to.
+												 */
 
 	/**
 	 * This class is used to order the nodes that get put into the Priority
@@ -36,8 +47,12 @@ public class SubStateList {
 	public void addSubStateToList(State sS) {
 		subStatesList.offer(sS);
 	}
-	
-	public String getSubStateListName(){
+
+	public String getSubStateListName() {
 		return subStateTypeName;
+	}
+	
+	public PriorityQueue<State> getSubStatesList(){
+		return subStatesList;
 	}
 }

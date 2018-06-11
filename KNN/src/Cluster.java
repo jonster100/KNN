@@ -43,7 +43,11 @@ public class Cluster {
 		SubStateList list = new SubStateList(tempName);
 		clusterSubStateList.add(list);
 	}
-
+	
+	public LinkedList<SubStateList> getSubStateLists(){
+		return clusterSubStateList;
+	}
+	
 	private SubStateList getSubStateList(String tempName) {
 		SubStateList list = null;
 		for (SubStateList s : clusterSubStateList) {
