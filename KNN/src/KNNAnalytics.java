@@ -11,7 +11,7 @@ public class KNNAnalytics {
 		this.createCluster();
 		this.addStateToCluster();
 		this.printClusters();
-		this.classierSetup();
+		this.classifierSetup();
 	}
 
 	private void createCluster() {
@@ -65,7 +65,7 @@ public class KNNAnalytics {
 		}
 	}
 
-	private void classierSetup() {
+	private void classifierSetup() {
 		stateClassifier = new Classifier();
 		for(Cluster c: clusterList){
 			LinkedList<SubStateList> tempList = c.getSubStateLists();
@@ -74,5 +74,6 @@ public class KNNAnalytics {
 				stateClassifier.addSubStateList(sS);
 			}*/
 		}
+		stateClassifier.setupOrderedStateList();
 	}
 }

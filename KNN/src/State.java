@@ -3,6 +3,7 @@ import java.util.LinkedList;
 public class State {
 	private String clusterOrigin;
 	private String stateId;
+	private int weight; 
 	private LinkedList<SubState> subStateList;
 
 	public State(String tempId) {
@@ -42,5 +43,15 @@ public class State {
 
 	public String getClusterOrigin() {
 		return clusterOrigin;
+	}
+	
+	public void setWeight(){
+		//testing the classifier
+		for(SubState sS:subStateList){
+			weight+=sS.getSubStateValue();
+		}
+	}
+	public int getWeight(){
+		return weight; 
 	}
 }

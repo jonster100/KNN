@@ -22,7 +22,7 @@ public class SubStateList {
 	 * compare method.
 	 **/
 	public class subStateCompareter implements Comparator<State> {
-		/**
+		/*
 		 * @param x,y
 		 *            Identifiers for the 'SubState' objects to be passed
 		 *            through the method
