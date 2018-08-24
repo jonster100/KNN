@@ -8,18 +8,41 @@ public class KNNAnalytics {
 	public KNNAnalytics() {
 		clusterList = new LinkedList<>();
 		stateClassifier = new Classifier();
-		this.createCluster();
-		this.addStateToCluster();
-		this.printClusters();
-		this.classifierSetup();
+		/*
+		 * this.createCluster(); this.addStateToCluster(); this.printClusters();
+		 * this.classifierSetup();
+		 */
 	}
 
-	private void createCluster() {
-		Scanner in = new Scanner(System.in);
-		System.out.println("Cluster Name: ");
-		String clustName = in.next();
-		Cluster tempClust = new Cluster(clustName);
+	// custom creation
+	public void createCluster(String clusterName) {
+		Cluster tempClust = new Cluster(clusterName);
 		clusterList.add(tempClust);
+	}
+
+	// custom creation
+	public boolean createState(String stateId, String clustName, String[][] subStateData, int noSubStates) {
+		Cluster tempClust = this.findCluster(clustName);
+		boolean toBeReturned = true;// turns to false if tempCLust is null
+		if (tempClust == null) {
+			toBeReturned = false;
+		} else {
+			State tempState = new State(stateId);
+			for (int i = 0; i < noSubStates; i++) {
+				try {
+					this.createSubStates(subStateData[i][0], Integer.parseInt(subStateData[i][1]));
+				} catch (NumberFormatException e) {
+					System.out.println("SubState "+subStateData[i][0]+" is not an integer.");
+				}
+			}
+			tempClust.addState(tempState);
+		}
+		return toBeReturned;
+	}
+
+	private SubState createSubStates(String sSId, int value) {
+		SubState tempSs = new SubState(sSId, value);
+		return tempSs;
 	}
 
 	private Cluster findCluster(String clustName) {
@@ -33,33 +56,21 @@ public class KNNAnalytics {
 	}
 
 	// test
-	private void addStateToCluster() {
-		Scanner in = new Scanner(System.in);
-		System.out.println("Cluster Name: ");
-		String clustName = in.next();
-		Cluster clusterToAddToo = this.findCluster(clustName);
-		System.out.println("State ID: ");
-		String stateId = in.next();
-		State tempState = new State(stateId);
-		boolean x = true;
-		while (x) {
-			System.out.println("SubState ID: ");
-			String subStateId = in.next();
-			System.out.println("SubState value: ");
-			int subStateValue = in.nextInt();
-			SubState tempSubState = new SubState(subStateId, subStateValue);
-			if (subStateValue == 100) {
-				for (Cluster c : clusterList) {
-					clusterToAddToo.addState(tempState);
-				}
-				x = false;
-			} else {
-				tempState.addSubState(tempSubState);
-			}
-		}
-	}
+	/*
+	 * private void addStateToCluster() { Scanner in = new Scanner(System.in);
+	 * System.out.println("Cluster Name: "); String clustName = in.next();
+	 * Cluster clusterToAddToo = this.findCluster(clustName);
+	 * System.out.println("State ID: "); String stateId = in.next(); State
+	 * tempState = new State(stateId); boolean x = true; while (x) {
+	 * System.out.println("SubState ID: "); String subStateId = in.next();
+	 * System.out.println("SubState value: "); int subStateValue = in.nextInt();
+	 * SubState tempSubState = new SubState(subStateId, subStateValue); if
+	 * (subStateValue == 100) { for (Cluster c : clusterList) {
+	 * clusterToAddToo.addState(tempState); } x = false; } else {
+	 * tempState.addSubState(tempSubState); } } }
+	 */
 
-	private void printClusters() {
+	public void printClusters() {
 		for (Cluster c : clusterList) {
 			c.printSates();
 		}
@@ -67,12 +78,13 @@ public class KNNAnalytics {
 
 	private void classifierSetup() {
 		stateClassifier = new Classifier();
-		for(Cluster c: clusterList){
+		for (Cluster c : clusterList) {
 			LinkedList<SubStateList> tempList = c.getSubStateLists();
 			stateClassifier.addSubStateList(tempList);
-			/*for(SubStateList sS:tempList){
-				stateClassifier.addSubStateList(sS);
-			}*/
+			/*
+			 * for(SubStateList sS:tempList){
+			 * stateClassifier.addSubStateList(sS); }
+			 */
 		}
 		stateClassifier.setupOrderedStateList();
 	}
