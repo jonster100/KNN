@@ -52,6 +52,7 @@ public class Classifier {
 				this.mergeHierList(sS.getSubStateListName(), sS);
 			}
 		}
+		this.setupOrderedStateList();
 	}
 
 	private void mergeHierList(String listName, SubStateList subStateList) {
@@ -75,12 +76,61 @@ public class Classifier {
 		}
 		return toBeReturned;
 	}
-	
-	public void setupOrderedStateList(){
-		for(SubStateList sSL: hierSubStateLists){
-			for(State sS:sSL.getSubStatesList()){
+
+	private void setupOrderedStateList() {
+		for (SubStateList sSL : hierSubStateLists) {
+			for (State sS : sSL.getSubStatesList()) {
 				orderedStateList.offer(sS);
 			}
 		}
 	}
+
+	private SubStateList findSubStateList(String subStateTypeName) {
+		SubStateList returnSubStateList = null;
+		for (SubStateList ssL : hierSubStateLists) {
+			if (ssL.getSubStateListName().equals(subStateTypeName)) {
+				returnSubStateList = ssL;
+			}
+		}
+		return returnSubStateList;
+	}
+
+	private State[] returnOrderedStateList(PriorityQueue<State> orderedList) {
+		State[] tempArray1 = new State[100];
+		State[] tempArray2 = orderedList.toArray(tempArray1);
+		return tempArray2;
+	}
+
+	public String startClassifier(State s) {
+		String toBeReturned = "";
+		LinkedList<SubState> newStateList = s.getAllSubStates();
+		for (int i = 0; i < newStateList.size(); i++) {
+			SubStateList tempList = this.findSubStateList(newStateList.get(i).getSubStateName());
+			tempList.addSubStateToList(s);
+			State[] orderedStates = this.returnOrderedStateList(tempList.getSubStatesList());
+			for (int x = 0; x < orderedStates.length; x++) {
+				if (orderedStates[x].getClusterOrigin().equals(s.getClusterOrigin())
+						&& orderedStates[x].getStateId().equals(s.getStateId())) {
+					State targetState = orderedStates[x];
+					int noNeighbors = 6;
+					State[] nearestStates = new State[noNeighbors];
+					for (int y = 0; y < noNeighbors; y++) {
+						try {
+							nearestStates[y] = orderedStates[x - (noNeighbors / 2)];
+						} catch (ArrayIndexOutOfBoundsException e) {
+							System.out.println("Array out of bounds trying to find neaest neighbor.");
+						}
+					}
+				}
+			}
+		}
+		return toBeReturned;
+	}
+
+	private String clarifyNearestNeighbor(State[] neighbors) {
+		String toBeReturned = "";
+		//need to finsish this function to tally the states, to find the correct substate
+		return toBeReturned;
+	}
+
 }

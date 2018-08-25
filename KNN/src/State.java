@@ -11,6 +11,12 @@ public class State {
 		stateId = tempId;
 		clusterOrigin = "none";
 	}
+	
+	public State(String tempId,String clustOrig) {
+		subStateList = new LinkedList<>();
+		stateId = tempId;
+		clusterOrigin = clustOrig;
+	}
 
 	public void addSubState(SubState sS) {
 		subStateList.add(sS);
@@ -53,5 +59,9 @@ public class State {
 	}
 	public int getWeight(){
 		return weight; 
+	}
+	
+	public String getStateId(){
+		return stateId;
 	}
 }

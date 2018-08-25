@@ -23,7 +23,6 @@ public class Cluster {
 				String tempSubStateName = sS.getSubStateName();
 				this.createSubStateList(tempSubStateName);
 				this.getSubStateList(tempSubStateName).addSubStateToList(tempState);
-				;
 			}
 		}
 	}

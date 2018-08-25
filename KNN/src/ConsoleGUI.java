@@ -27,6 +27,9 @@ public class ConsoleGUI {
 			} else if(text.equals("v")){
 				this.viewClusters();
 			}
+			else if(text.equals("a")) {
+				
+			}
 		}
 	}
 
@@ -42,14 +45,19 @@ public class ConsoleGUI {
 		Scanner in = new Scanner(System.in);
 		System.out.println("Please enter the ID/Name of the State: ");
 		String stateId = in.next();
-		System.out.println("Please enter the name of the Cluster you would liek to dd the State to: ");
+		System.out.println("Please enter the name of the Cluster you would like to add the state to, or type 1 if the state is to be classified: ");
 		String clusterName = in.next();
 		System.out.println("The state requires SubStates to be created.");
 		System.out.println("The state requires SubStates to be created.");
 		System.out.println("Please enter the number of Substates you would like to create: ");
 		int noSubStates = in.nextInt();
 		String[][] tempSubStateData = this.createSubStates(noSubStates);
-		engine.createState(stateId, clusterName, tempSubStateData,noSubStates);
+		if(engine.createState(stateId, clusterName, tempSubStateData,noSubStates,(clusterName.equals("1"))?true:false)){
+			System.out.println("State Created");
+		} else {
+			System.out.println("State could not be created.");
+		} 
+		
 	}
 	
 	private String[][] createSubStates(int noSubStates){

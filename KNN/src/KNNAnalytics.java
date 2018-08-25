@@ -21,21 +21,28 @@ public class KNNAnalytics {
 	}
 
 	// custom creation
-	public boolean createState(String stateId, String clustName, String[][] subStateData, int noSubStates) {
+	public boolean createState(String stateId, String clustName, String[][] subStateData, int noSubStates,
+			boolean classify) {
 		Cluster tempClust = this.findCluster(clustName);
 		boolean toBeReturned = true;// turns to false if tempCLust is null
 		if (tempClust == null) {
 			toBeReturned = false;
+			System.out.println("!- "+clustName+" Cluster Does not exist.");
 		} else {
-			State tempState = new State(stateId);
+			State tempState = (clustName.equals("1"))?new State(stateId):new State(stateId,clustName);//changes the type of state name, so that
 			for (int i = 0; i < noSubStates; i++) {
 				try {
 					this.createSubStates(subStateData[i][0], Integer.parseInt(subStateData[i][1]));
 				} catch (NumberFormatException e) {
-					System.out.println("SubState "+subStateData[i][0]+" is not an integer.");
+					System.out.println("!-SubState " + subStateData[i][0] + " is not an integer.");
+					toBeReturned = false;
 				}
 			}
-			tempClust.addState(tempState);
+			if (classify == true) {
+				this.classifyState(tempState);
+			} else {
+				tempClust.addState(tempState);
+			}
 		}
 		return toBeReturned;
 	}
@@ -86,6 +93,10 @@ public class KNNAnalytics {
 			 * stateClassifier.addSubStateList(sS); }
 			 */
 		}
-		stateClassifier.setupOrderedStateList();
+		//stateClassifier.setupOrderedStateList();
+	}
+
+	private void classifyState(State tempState) {
+		stateClassifier.startClassifier(tempState);
 	}
 }
