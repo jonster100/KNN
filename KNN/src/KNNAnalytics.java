@@ -25,7 +25,7 @@ public class KNNAnalytics {
 			boolean classify) {
 		Cluster tempClust = this.findCluster(clustName);
 		boolean toBeReturned = true;// turns to false if tempCLust is null
-		if (tempClust == null) {
+		if (tempClust == null&&classify==false) {
 			toBeReturned = false;
 			System.out.println("!- "+clustName+" Cluster Does not exist.");
 		} else {
@@ -83,8 +83,7 @@ public class KNNAnalytics {
 		}
 	}
 
-	private void classifierSetup() {
-		stateClassifier = new Classifier();
+	public void classifierSetup() {
 		for (Cluster c : clusterList) {
 			LinkedList<SubStateList> tempList = c.getSubStateLists();
 			stateClassifier.addSubStateList(tempList);
@@ -97,6 +96,7 @@ public class KNNAnalytics {
 	}
 
 	private void classifyState(State tempState) {
-		stateClassifier.startClassifier(tempState);
+		String clusterName = stateClassifier.startClassifier(tempState);
+		this.findCluster(clusterName).addState(tempState);
 	}
 }

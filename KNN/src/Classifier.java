@@ -1,4 +1,6 @@
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.LinkedList;
 import java.util.Comparator;
 import java.util.PriorityQueue;
@@ -102,8 +104,8 @@ public class Classifier {
 	}
 
 	public String startClassifier(State s) {
-		String toBeReturned = "";
 		LinkedList<SubState> newStateList = s.getAllSubStates();
+		String[] closestClusters=new String[newStateList.size()];
 		for (int i = 0; i < newStateList.size(); i++) {
 			SubStateList tempList = this.findSubStateList(newStateList.get(i).getSubStateName());
 			tempList.addSubStateToList(s);
@@ -111,7 +113,7 @@ public class Classifier {
 			for (int x = 0; x < orderedStates.length; x++) {
 				if (orderedStates[x].getClusterOrigin().equals(s.getClusterOrigin())
 						&& orderedStates[x].getStateId().equals(s.getStateId())) {
-					State targetState = orderedStates[x];
+					//State targetState = orderedStates[x];
 					int noNeighbors = 6;
 					State[] nearestStates = new State[noNeighbors];
 					for (int y = 0; y < noNeighbors; y++) {
@@ -121,16 +123,55 @@ public class Classifier {
 							System.out.println("Array out of bounds trying to find neaest neighbor.");
 						}
 					}
+					closestClusters[i]=this.clarifyNearestNeighbors(nearestStates);
 				}
 			}
 		}
-		return toBeReturned;
+		return this.returnClosestCluster(closestClusters);
+	}
+	
+	private String returnClosestCluster(String[] listClustNames){
+		String cluster = "";
+		int noClustStates=0;
+		Map<String,Integer> clusterNameTally = new HashMap<String,Integer>();
+		for(int i=0;i<listClustNames.length;i++){
+			String clusterName = listClustNames[i];
+			if(clusterName.equals(clusterNameTally.containsKey(clusterName))){
+				int tempClustTally = clusterNameTally.get(clusterName);
+				clusterNameTally.put(clusterName,tempClustTally);
+			}else{
+				clusterNameTally.put(clusterName,1);
+			}
+		}
+		for(String s:clusterNameTally.keySet()){
+			if(clusterNameTally.get(s)>noClustStates){
+				cluster=s;
+				noClustStates=clusterNameTally.get(s);
+			}
+		}
+		return cluster;
 	}
 
-	private String clarifyNearestNeighbor(State[] neighbors) {
-		String toBeReturned = "";
-		//need to finsish this function to tally the states, to find the correct substate
-		return toBeReturned;
+	private String clarifyNearestNeighbors(State[] neighbors) {
+		String cluster = "";
+		int noClustStates=0;
+		Map<String,Integer> clusterStateTally = new HashMap<String,Integer>();
+		for(int i=0;i<neighbors.length;i++){
+			String clusterName = neighbors[i].getClusterOrigin();
+			if(clusterName.equals(clusterStateTally.containsKey(clusterName))){
+				int tempClustTally = clusterStateTally.get(clusterName);
+				clusterStateTally.put(clusterName,tempClustTally);
+			}else{
+				clusterStateTally.put(clusterName,1);
+			}
+		}
+		for(String s:clusterStateTally.keySet()){
+			if(clusterStateTally.get(s)>noClustStates){
+				cluster=s;
+				noClustStates=clusterStateTally.get(s);
+			}
+		}
+		return cluster;
 	}
 
 }

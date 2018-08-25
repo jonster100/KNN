@@ -11,6 +11,7 @@ public class ConsoleGUI {
 	private void mainConsole() {
 		Scanner in = new Scanner(System.in);
 		System.out.println("Please Choose one of the following options. ");
+		System.out.println("Press r, to setup the program");
 		System.out.println("Press c, to create a new Cluster.");
 		System.out.println("Press s, to create a new State.");
 		System.out.println("Press v, to view all the Clusters.");
@@ -29,6 +30,8 @@ public class ConsoleGUI {
 			}
 			else if(text.equals("a")) {
 				
+			} else if(text.equals("r")){
+				engine.classifierSetup();
 			}
 		}
 	}
