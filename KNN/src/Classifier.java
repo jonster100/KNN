@@ -98,14 +98,14 @@ public class Classifier {
 	}
 
 	private State[] returnOrderedStateList(PriorityQueue<State> orderedList) {
-		State[] tempArray1 = new State[100];
+		State[] tempArray1 = new State[orderedList.size()];
 		State[] tempArray2 = orderedList.toArray(tempArray1);
 		return tempArray2;
 	}
 
 	public String startClassifier(State s) {
 		LinkedList<SubState> newStateList = s.getAllSubStates();
-		String[] closestClusters=new String[newStateList.size()];
+		String[] closestClusters = new String[newStateList.size()];
 		for (int i = 0; i < newStateList.size(); i++) {
 			SubStateList tempList = this.findSubStateList(newStateList.get(i).getSubStateName());
 			tempList.addSubStateToList(s);
@@ -113,40 +113,48 @@ public class Classifier {
 			for (int x = 0; x < orderedStates.length; x++) {
 				if (orderedStates[x].getClusterOrigin().equals(s.getClusterOrigin())
 						&& orderedStates[x].getStateId().equals(s.getStateId())) {
-					//State targetState = orderedStates[x];
+					// State targetState = orderedStates[x];
 					int noNeighbors = 6;
-					State[] nearestStates = new State[noNeighbors];
-					for (int y = 0; y < noNeighbors; y++) {
-						try {
-							nearestStates[y] = orderedStates[x - (noNeighbors / 2)];
-						} catch (ArrayIndexOutOfBoundsException e) {
-							System.out.println("Array out of bounds trying to find neaest neighbor.");
+					State[] nearestStates = (orderedStates.length <= 6) ? orderedStates : new State[noNeighbors];
+					if (orderedStates.length == 6) {
+						for (int y = 0; y < noNeighbors; y++) {
+							try {
+								nearestStates[y] = orderedStates[x - (noNeighbors / 2)];
+							} catch (ArrayIndexOutOfBoundsException e) {
+								System.out.println("Array out of bounds trying to find nearest neighbor.");
+							}
 						}
 					}
-					closestClusters[i]=this.clarifyNearestNeighbors(nearestStates);
+					closestClusters[i] = this.clarifyNearestNeighbors(nearestStates);
 				}
 			}
 		}
 		return this.returnClosestCluster(closestClusters);
 	}
-	
-	private String returnClosestCluster(String[] listClustNames){
+
+	/*
+	 * private State[] mergeArrayList(State[] merge1,State[] merge2,int
+	 * sizeOfNewArray){ State [] newList=new State[sizeOfNewArray]; for(){}
+	 * return newList; }
+	 */
+
+	private String returnClosestCluster(String[] listClustNames) {
 		String cluster = "";
-		int noClustStates=0;
-		Map<String,Integer> clusterNameTally = new HashMap<String,Integer>();
-		for(int i=0;i<listClustNames.length;i++){
+		int noClustStates = 0;
+		Map<String, Integer> clusterNameTally = new HashMap<String, Integer>();
+		for (int i = 0; i < listClustNames.length; i++) {
 			String clusterName = listClustNames[i];
-			if(clusterName.equals(clusterNameTally.containsKey(clusterName))){
-				int tempClustTally = clusterNameTally.get(clusterName);
-				clusterNameTally.put(clusterName,tempClustTally);
-			}else{
-				clusterNameTally.put(clusterName,1);
+			if (clusterName.equals(clusterNameTally.containsKey(clusterName))) {
+				int tempClustTally = clusterNameTally.get(clusterName)+1;
+				clusterNameTally.put(clusterName, tempClustTally);
+			} else {
+				clusterNameTally.put(clusterName, 1);
 			}
 		}
-		for(String s:clusterNameTally.keySet()){
-			if(clusterNameTally.get(s)>noClustStates){
-				cluster=s;
-				noClustStates=clusterNameTally.get(s);
+		for (String s : clusterNameTally.keySet()) {
+			if (clusterNameTally.get(s) > noClustStates) {
+				cluster = s;
+				noClustStates = clusterNameTally.get(s);
 			}
 		}
 		return cluster;
@@ -154,21 +162,25 @@ public class Classifier {
 
 	private String clarifyNearestNeighbors(State[] neighbors) {
 		String cluster = "";
-		int noClustStates=0;
-		Map<String,Integer> clusterStateTally = new HashMap<String,Integer>();
-		for(int i=0;i<neighbors.length;i++){
+		int noClustStates = 0;
+		Map<String, Integer> clusterStateTally = new HashMap<String, Integer>();
+		for (int i = 0; i < neighbors.length; i++) {
 			String clusterName = neighbors[i].getClusterOrigin();
-			if(clusterName.equals(clusterStateTally.containsKey(clusterName))){
-				int tempClustTally = clusterStateTally.get(clusterName);
-				clusterStateTally.put(clusterName,tempClustTally);
-			}else{
-				clusterStateTally.put(clusterName,1);
+			if(clusterName.equals("none")){
+				//is meant to be empty
+			}else {
+				if (clusterName.equals(clusterStateTally.containsKey(clusterName))) {
+					int tempClustTally = clusterStateTally.get(clusterName)+1;
+					clusterStateTally.put(clusterName, tempClustTally);
+				} else {
+					clusterStateTally.put(clusterName, 1);
+				}
 			}
 		}
-		for(String s:clusterStateTally.keySet()){
-			if(clusterStateTally.get(s)>noClustStates){
-				cluster=s;
-				noClustStates=clusterStateTally.get(s);
+		for (String s : clusterStateTally.keySet()) {
+			if (clusterStateTally.get(s) > noClustStates) {
+				cluster = s;
+				noClustStates = clusterStateTally.get(s);
 			}
 		}
 		return cluster;

@@ -1,3 +1,5 @@
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.LinkedList;
 import java.util.Scanner;
 
@@ -8,6 +10,7 @@ public class KNNAnalytics {
 	public KNNAnalytics() {
 		clusterList = new LinkedList<>();
 		stateClassifier = new Classifier();
+		this.addDataToLookup();
 		/*
 		 * this.createCluster(); this.addStateToCluster(); this.printClusters();
 		 * this.classifierSetup();
@@ -25,20 +28,22 @@ public class KNNAnalytics {
 			boolean classify) {
 		Cluster tempClust = this.findCluster(clustName);
 		boolean toBeReturned = true;// turns to false if tempCLust is null
-		if (tempClust == null&&classify==false) {
+		if (tempClust == null && classify == false) {
 			toBeReturned = false;
-			System.out.println("!- "+clustName+" Cluster Does not exist.");
+			System.out.println("!- " + clustName + " Cluster Does not exist.");
 		} else {
-			State tempState = (clustName.equals("1"))?new State(stateId):new State(stateId,clustName);//changes the type of state name, so that
+			State tempState = (clustName.equals("1")) ? new State(stateId) : new State(stateId, clustName);
 			for (int i = 0; i < noSubStates; i++) {
 				try {
-					this.createSubStates(subStateData[i][0], Integer.parseInt(subStateData[i][1]));
+					tempState.addSubState(
+							this.createSubStates(subStateData[i][0], Integer.parseInt(subStateData[i][1])));
 				} catch (NumberFormatException e) {
 					System.out.println("!-SubState " + subStateData[i][0] + " is not an integer.");
 					toBeReturned = false;
 				}
 			}
 			if (classify == true) {
+				this.classifierSetup();
 				this.classifyState(tempState);
 			} else {
 				tempClust.addState(tempState);
@@ -92,11 +97,53 @@ public class KNNAnalytics {
 			 * stateClassifier.addSubStateList(sS); }
 			 */
 		}
-		//stateClassifier.setupOrderedStateList();
+		// stateClassifier.setupOrderedStateList();
 	}
 
 	private void classifyState(State tempState) {
 		String clusterName = stateClassifier.startClassifier(tempState);
-		this.findCluster(clusterName).addState(tempState);
+		System.out.println("classifier clust name: "+clusterName);
+		//this.findCluster(clusterName).addState(tempState);
 	}
+
+	public void addDataToLookup() {
+		try {
+			String fileName = "lookupdata.txt";
+			Scanner infile = new Scanner(new FileReader(fileName)); 
+			infile.useDelimiter(":|\r?\n|\r");
+			for (int i = 0; i < 5; i++) { 
+				int ifClust = infile.nextInt();
+				if (ifClust == 1) {
+					String clustName = infile.next();
+					this.createCluster(clustName);
+				}
+				else if(ifClust==2){
+					String stateId = infile.next();
+					String clustName = infile.next();
+					String[][] tempData = new String[2][2];
+					tempData[0][0] = infile.next();
+					tempData[0][1] = infile.next();
+					tempData[1][0] = infile.next();
+					tempData[1][1] = infile.next();
+					this.createState(stateId, clustName, tempData, 2, false);
+				}
+				else if(ifClust==3){
+					String stateId = infile.next();
+					String clustName = infile.next();
+					String[][] tempData = new String[2][2];
+					tempData[0][0] = infile.next();
+					tempData[0][1] = infile.next();
+					tempData[1][0] = infile.next();
+					tempData[1][1] = infile.next();
+					this.createState(stateId, clustName, tempData, 2, true);
+				}
+			}
+			System.out.println("Data Loaded"); // testing if the data was loaded
+			infile.close();
+		} catch (FileNotFoundException e) {
+			System.out.println(e.getMessage()); // if the files was not found
+												// print message
+		}
+	}
+
 }

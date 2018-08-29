@@ -51,7 +51,6 @@ public class ConsoleGUI {
 		System.out.println("Please enter the name of the Cluster you would like to add the state to, or type 1 if the state is to be classified: ");
 		String clusterName = in.next();
 		System.out.println("The state requires SubStates to be created.");
-		System.out.println("The state requires SubStates to be created.");
 		System.out.println("Please enter the number of Substates you would like to create: ");
 		int noSubStates = in.nextInt();
 		String[][] tempSubStateData = this.createSubStates(noSubStates);
