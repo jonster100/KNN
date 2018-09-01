@@ -103,29 +103,54 @@ public class Classifier {
 		return tempArray2;
 	}
 
+	private State[] getNearestStates(State[] orderedStates, int targetPosition) {
+		State[] toBeReturned = null;
+		int noNeighbors = 4;
+		boolean leftRightOutOfBounds = false;
+		boolean outOfBounds = false;
+		boolean run = true;
+		while (run) {
+			boolean tempOutOfBounds = false;
+			State[] nearestStates = (orderedStates.length <= noNeighbors) ? orderedStates : new State[noNeighbors];
+			if (orderedStates.length > noNeighbors) {
+				for (int y = 0; y < noNeighbors; y++) {
+					try {
+						nearestStates[y] = orderedStates[(outOfBounds == false) ? targetPosition - (noNeighbors/2)
+								: (leftRightOutOfBounds == true) ? y : orderedStates.length - y];
+					} catch (ArrayIndexOutOfBoundsException e) {
+						if (y == 0) {
+							leftRightOutOfBounds = true;
+						}
+						outOfBounds = true;
+						tempOutOfBounds=true;
+						System.out.println("Array out of bounds trying to find nearest neighbor.");
+						break;
+					}
+				}
+			}
+			if (tempOutOfBounds == false) {
+				toBeReturned = nearestStates;
+				run=false;
+			}
+		}
+
+		return toBeReturned;
+	}
+
 	public String startClassifier(State s) {
 		LinkedList<SubState> newStateList = s.getAllSubStates();
 		String[] closestClusters = new String[newStateList.size()];
 		for (int i = 0; i < newStateList.size(); i++) {
 			SubStateList tempList = this.findSubStateList(newStateList.get(i).getSubStateName());
-			tempList.addSubStateToList(s);
-			State[] orderedStates = this.returnOrderedStateList(tempList.getSubStatesList());
-			for (int x = 0; x < orderedStates.length; x++) {
-				if (orderedStates[x].getClusterOrigin().equals(s.getClusterOrigin())
-						&& orderedStates[x].getStateId().equals(s.getStateId())) {
-					// State targetState = orderedStates[x];
-					int noNeighbors = 6;
-					State[] nearestStates = (orderedStates.length <= 6) ? orderedStates : new State[noNeighbors];
-					if (orderedStates.length == 6) {
-						for (int y = 0; y < noNeighbors; y++) {
-							try {
-								nearestStates[y] = orderedStates[x - (noNeighbors / 2)];
-							} catch (ArrayIndexOutOfBoundsException e) {
-								System.out.println("Array out of bounds trying to find nearest neighbor.");
-							}
-						}
+			if (tempList != null) {
+				tempList.addSubStateToList(s);
+				State[] orderedStates = this.returnOrderedStateList(tempList.getSubStatesList());
+				for (int x = 0; x < orderedStates.length; x++) {
+					if (orderedStates[x].getClusterOrigin().equals(s.getClusterOrigin())
+							&& orderedStates[x].getStateId().equals(s.getStateId())) {
+						// State targetState = orderedStates[x];
+						closestClusters[i] = this.clarifyNearestNeighbors(this.getNearestStates(orderedStates, x));
 					}
-					closestClusters[i] = this.clarifyNearestNeighbors(nearestStates);
 				}
 			}
 		}
@@ -145,7 +170,7 @@ public class Classifier {
 		for (int i = 0; i < listClustNames.length; i++) {
 			String clusterName = listClustNames[i];
 			if (clusterName.equals(clusterNameTally.containsKey(clusterName))) {
-				int tempClustTally = clusterNameTally.get(clusterName)+1;
+				int tempClustTally = clusterNameTally.get(clusterName) + 1;
 				clusterNameTally.put(clusterName, tempClustTally);
 			} else {
 				clusterNameTally.put(clusterName, 1);
@@ -166,11 +191,11 @@ public class Classifier {
 		Map<String, Integer> clusterStateTally = new HashMap<String, Integer>();
 		for (int i = 0; i < neighbors.length; i++) {
 			String clusterName = neighbors[i].getClusterOrigin();
-			if(clusterName.equals("none")){
-				//is meant to be empty
-			}else {
-				if (clusterName.equals(clusterStateTally.containsKey(clusterName))) {
-					int tempClustTally = clusterStateTally.get(clusterName)+1;
+			if (clusterName.equals("none")) {
+				// is meant to be empty
+			} else {
+				if (clusterStateTally.containsKey(clusterName)) {
+					int tempClustTally = clusterStateTally.get(clusterName) + 1;
 					clusterStateTally.put(clusterName, tempClustTally);
 				} else {
 					clusterStateTally.put(clusterName, 1);

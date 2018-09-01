@@ -9,7 +9,6 @@ public class KNNAnalytics {
 
 	public KNNAnalytics() {
 		clusterList = new LinkedList<>();
-		stateClassifier = new Classifier();
 		this.addDataToLookup();
 		/*
 		 * this.createCluster(); this.addStateToCluster(); this.printClusters();
@@ -43,7 +42,9 @@ public class KNNAnalytics {
 				}
 			}
 			if (classify == true) {
-				this.classifierSetup();
+				if (stateClassifier == null) {
+					this.classifierSetup();
+				}
 				this.classifyState(tempState);
 			} else {
 				tempClust.addState(tempState);
@@ -89,6 +90,7 @@ public class KNNAnalytics {
 	}
 
 	public void classifierSetup() {
+		stateClassifier = new Classifier();
 		for (Cluster c : clusterList) {
 			LinkedList<SubStateList> tempList = c.getSubStateLists();
 			stateClassifier.addSubStateList(tempList);
@@ -102,22 +104,23 @@ public class KNNAnalytics {
 
 	private void classifyState(State tempState) {
 		String clusterName = stateClassifier.startClassifier(tempState);
-		System.out.println("classifier clust name: "+clusterName);
-		//this.findCluster(clusterName).addState(tempState);
+		System.out.println("classifier clust name: " + clusterName);
+		this.findCluster(clusterName).addState(tempState);
+		tempState.setClusterOrigin(clusterName);
 	}
 
 	public void addDataToLookup() {
 		try {
 			String fileName = "lookupdata.txt";
-			Scanner infile = new Scanner(new FileReader(fileName)); 
+			Scanner infile = new Scanner(new FileReader(fileName));
 			infile.useDelimiter(":|\r?\n|\r");
-			for (int i = 0; i < 5; i++) { 
+			int noDataEntries = infile.nextInt();
+			for (int i = 0; i < noDataEntries; i++) {
 				int ifClust = infile.nextInt();
 				if (ifClust == 1) {
 					String clustName = infile.next();
 					this.createCluster(clustName);
-				}
-				else if(ifClust==2){
+				} else if (ifClust == 2) {
 					String stateId = infile.next();
 					String clustName = infile.next();
 					String[][] tempData = new String[2][2];
@@ -126,15 +129,15 @@ public class KNNAnalytics {
 					tempData[1][0] = infile.next();
 					tempData[1][1] = infile.next();
 					this.createState(stateId, clustName, tempData, 2, false);
-				}
-				else if(ifClust==3){
+				} else if (ifClust == 3) {
 					String stateId = infile.next();
 					String clustName = infile.next();
-					String[][] tempData = new String[2][2];
-					tempData[0][0] = infile.next();
-					tempData[0][1] = infile.next();
-					tempData[1][0] = infile.next();
-					tempData[1][1] = infile.next();
+					int noSubStateData = infile.nextInt();
+					String[][] tempData = new String[noSubStateData][2];
+					for (int x = 0; x < noSubStateData; x++) {
+						tempData[x][0] = infile.next();
+						tempData[x][1] = infile.next();
+					}
 					this.createState(stateId, clustName, tempData, 2, true);
 				}
 			}
