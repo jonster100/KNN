@@ -105,8 +105,13 @@ public class KNNAnalytics {
 	private void classifyState(State tempState) {
 		String clusterName = stateClassifier.startClassifier(tempState);
 		System.out.println("classifier clust name: " + clusterName);
-		this.findCluster(clusterName).addState(tempState);
+		Cluster foundCluster = this.findCluster(clusterName);
+		foundCluster.addState(tempState);
 		tempState.setClusterOrigin(clusterName);
+		LinkedList<SubStateList> newSubStates = foundCluster.getNewSubStateLists();
+		if (newSubStates.size() >= 1) {
+			stateClassifier.addSubStateList(newSubStates);
+		}
 	}
 
 	public void addDataToLookup() {

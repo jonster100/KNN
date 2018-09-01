@@ -136,13 +136,23 @@ public class Classifier {
 
 		return toBeReturned;
 	}
+	
+	private LinkedList<SubState> returnCurrentExistingStates(LinkedList<SubState> sL){
+		LinkedList<SubState> toBeReturned = new LinkedList<SubState>();
+		for(SubState sS:sL){
+			if(this.findSubStateList(sS.getSubStateName())!=null){
+				toBeReturned.offer(sS);
+			}
+		}
+		return toBeReturned;
+	}
 
 	public String startClassifier(State s) {
-		LinkedList<SubState> newStateList = s.getAllSubStates();
+		LinkedList<SubState> newStateList = this.returnCurrentExistingStates(s.getAllSubStates());
 		String[] closestClusters = new String[newStateList.size()];
 		for (int i = 0; i < newStateList.size(); i++) {
 			SubStateList tempList = this.findSubStateList(newStateList.get(i).getSubStateName());
-			if (tempList != null) {
+			if (tempList != null) {//this might not be needed
 				tempList.addSubStateToList(s);
 				State[] orderedStates = this.returnOrderedStateList(tempList.getSubStatesList());
 				for (int x = 0; x < orderedStates.length; x++) {

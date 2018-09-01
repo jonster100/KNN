@@ -47,6 +47,16 @@ public class Cluster {
 		return clusterSubStateList;
 	}
 	
+	public LinkedList<SubStateList> getNewSubStateLists(){
+		LinkedList<SubStateList> tempList=new LinkedList<SubStateList>();
+		for(SubStateList ssL:clusterSubStateList){
+			if(ssL.getSubStatesList().size()==1){
+				tempList.add(ssL);
+			}
+		}
+		return tempList;
+	}
+	
 	private SubStateList getSubStateList(String tempName) {
 		SubStateList list = null;
 		for (SubStateList s : clusterSubStateList) {
